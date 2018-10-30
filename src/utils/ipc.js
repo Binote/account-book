@@ -40,7 +40,7 @@ export const listen = (eventName, handler) => {
       response.data = await handler(data)
     } catch (err) {
       response.code = err.code || 500
-      response.data = { message: err.message || 'Main process error.' }
+      response.data = { message: err.message || '主进程错误。' }
     }
     e.sender.send(`${eventName}_res_${id}`, response)
   })

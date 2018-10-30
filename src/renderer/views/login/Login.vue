@@ -35,7 +35,7 @@
 <script>
 // import * as authServices from '@/services/auth'
 // import Canvas from './components/Canvas'
-const send = require('../../../utils/ipc').send
+// const send = require('@/../utils/ipc').send
 // const { ipcRenderer } = require('electron')
 export default {
   name: 'login',
@@ -56,7 +56,7 @@ export default {
             trigger: 'blur'
           }
         ],
-        passWord: [
+        password: [
           {
             required: true,
             message: '请填写管理员密码！',
@@ -64,8 +64,8 @@ export default {
           },
           {
             type: 'string',
-            min: 1,
-            message: '密码请至少输入6位',
+            min: 5,
+            message: '密码请至少输入5位',
             trigger: 'blur'
           }
         ]
@@ -83,18 +83,17 @@ export default {
       })
     },
     login () {
-      // 获取异步返回值
-      // ipcRenderer.on('asynchronous-reply', (event, arg) => {
-      //   console.log(arg) // prints "pong"
-      // })
-      // ipcRenderer.send('asynchronous-message', 'ping')
-      send('login', {
+      this.$send('login', {
         msg: 'login',
         data: this.formInline
       }).then(res => {
-        console.log(res)
+        if (res.error === 0) {
+          this.$Message.success(res.data.message)
+        } else {
+          this.$Message.error('登录失败，请联系管理员或到git提交Issues')
+        }
       }).catch(err => {
-        console.log(err)
+        this.$Message.error(err.message)
       })
     }
   }
