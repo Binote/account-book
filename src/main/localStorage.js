@@ -7,4 +7,5 @@ if (typeof localStorage === 'undefined' || localStorage === null) {
   localStorage.getItem(md5('password')) || localStorage.setItem(md5('password'), md5('admin'))
 }
 
-module.exports = localStorage
+// module.exports = {localStorage}
+export default localStorage

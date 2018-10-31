@@ -96,4 +96,5 @@ class HandleDB {
   }
 };
 
-module.exports = HandleDB
+// module.exports = HandleDB
+export default HandleDB
