@@ -8,4 +8,5 @@ npm-debug.log
 npm-debug.log.*
 thumbs.db
 !.gitkeep
-scratch
+src/main/scratch
+src/main/data
