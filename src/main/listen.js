@@ -2,7 +2,7 @@
 import localStorage from './localStorage'
 const md5 = require('md5')
 const listen = require('../utils/ipc').listen
-require('./handleListen')
+const handleListen = require('./handleListen')
 class ResolveMessage {
   constructor (data, error = 0) {
     this.data = data
@@ -17,3 +17,4 @@ listen('login', (res) => {
     return Promise.reject(new Error('用户名或密码错误'))
   }
 })
+listen('getAccList', handleListen.getAccList)
