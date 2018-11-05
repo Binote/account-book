@@ -68,6 +68,13 @@ const mkSelectSql = (payload, sql) => {
   return sql
 }
 
+// class ResolveMessage {
+//   constructor (data, error = 0) {
+//     this.data = data
+//     this.error = error
+//   }
+// }
+
 export const getAccList = (payload) => {
   let sql = 'select * from diesel_acc_book_table'
   sql = mkSelectSql(payload, sql)
@@ -77,9 +84,3 @@ export const getAccList = (payload) => {
     console.log(err)
   })
 }
-setTimeout(() => {
-  getAccList({
-    id: 'sadsad',
-    sss: 'sdsddds'
-  })
-}, 1000)

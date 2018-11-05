@@ -89,6 +89,9 @@ export default {
       }).then(res => {
         if (res.error === 0) {
           this.$Message.success(res.data.message)
+          this.$router.push(
+            {path: '/statistical'}
+          )
         } else {
           this.$Message.error('登录失败，请联系管理员或到git提交Issues')
         }

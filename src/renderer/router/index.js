@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+const Layout = () => import('@/views/layout/Layout')
 
 Vue.use(Router)
 
@@ -9,6 +10,21 @@ export default new Router({
       path: '/',
       name: 'login',
       component: () => import('@/views/login/Login')
+    },
+    {
+      path: '/statistical',
+      name: 'statistical',
+      components: {
+        layout: Layout
+      }
+    },
+    {
+      path: '/diesel_acc',
+      name: 'diesel_acc',
+      components: {
+        layout: Layout,
+        component: () => import('@/views/dieselAcc/DieselAcc')
+      }
     },
     {
       path: '*',
