@@ -1,7 +1,8 @@
+
 const HandleDB = require('./db').default
-const { join } = require('path')
+// const { join } = require('path')
 let db = new HandleDB({
-  databaseFile: join(__dirname, `data/accountbase.db`)
+  databaseFile: `data/accountbase.db`
 })
 db.connectDataBase().then((result) => {
   console.log(result)
@@ -56,31 +57,47 @@ CREATE TABLE if not exists driver_table (
 
 const mkSelectSql = (payload, sql) => {
   let times = 0
+  let paramsArr = []
   for (let key in payload) {
     times++
     let item = payload[key]
     if (times === 1) {
-      sql += ` where ${key} like '%${item}%'`
+      sql += ` where ${key} like '%?%'`
     } else {
-      sql += ` and ${key} like '%${item}%'`
+      sql += ` and ${key} like '%?%'`
     }
+    paramsArr.push(item)
   }
-  return sql
+  return {
+    sql,
+    paramsArr
+  }
 }
 
-// class ResolveMessage {
-//   constructor (data, error = 0) {
-//     this.data = data
-//     this.error = error
-//   }
-// }
+class ResolveMessage {
+  constructor (data, error = 0) {
+    this.data = data
+    this.error = error
+  }
+}
 
-export const getAccList = (payload) => {
+export const getAccList = async (payload) => {
   let sql = 'select * from diesel_acc_book_table'
-  sql = mkSelectSql(payload, sql)
-  db.sql(sql, null, 'all').then((res) => {
-    console.log(res)
-  }).catch((err) => {
-    console.log(err)
-  })
+  let sqlObj = mkSelectSql(payload, sql)
+  sql = sqlObj.sql
+
+  let res
+  try {
+    res = await db.sql(sql, sqlObj.paramsArr, 'all')
+    return Promise.resolve(new ResolveMessage({list: res}))
+  } catch (error) {
+    return Promise.reject(error)
+  }
+
+  // db.sql(sql, sqlObj.paramsArr, 'all').then((res) => {
+  //   console.log(res)
+  //   return Promise.resolve(new ResolveMessage({list: res}))
+  // }).catch((err) => {
+  //   return Promise.reject(err)
+  // })
 }

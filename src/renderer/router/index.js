@@ -23,7 +23,7 @@ export default new Router({
       name: 'diesel_acc',
       components: {
         layout: Layout,
-        component: () => import('@/views/dieselAcc/DieselAcc')
+        content: () => import('@/views/dieselAcc/DieselAcc')
       }
     },
     {

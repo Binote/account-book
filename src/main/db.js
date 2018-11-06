@@ -1,7 +1,12 @@
+import { app, remote } from 'electron' // 引入remote模块
 
 var SQLite3 = require('sqlite3').verbose()
 const { dirExists } = require('./dirExists')
 const { join } = require('path')
+
+const APP = process.type === 'renderer' ? remote.app : app // 根据process.type来分辨在哪种模式使用哪种模块
+
+const STORE_PATH = APP.getPath('userData') // 获取electron应用的用户目录
 /**
  * 使用sqlite3持久化数据
  * 需求：把一个数组中的每个对象,每个对象中的属性,存到xxx.db文件中去,像数据库一样的去操作它
@@ -15,13 +20,13 @@ const { join } = require('path')
  */
 class HandleDB {
   constructor (options) {
-    this.databaseFile = options && options.databaseFile || join(__dirname, `data/test.db`)// 数据库文件(文件路径+文件名)
+    this.databaseFile = join(STORE_PATH, options && options.databaseFile || `data/test.db`)// 数据库文件(文件路径+文件名)
     // this.tableName = options && options.tableName || `adsTable` // 表名
     this.db = null // 打开的数据库对象
   }
   // 连接数据库(不存在就创建,存在则打开)
   async connectDataBase () {
-    await dirExists(join(__dirname, `data`))
+    await dirExists(join(STORE_PATH, `data`))
     let _self = this
     return new Promise((resolve, reject) => {
       _self.db = new SQLite3.Database(_self.databaseFile, function (err) {

@@ -1,7 +1,7 @@
 <template>
   <div class="Repertory">
     <!-- 筛选 start-->
-    <div class="select-wrapper">
+    <!-- <div class="select-wrapper">
       <Row>
         <SelectCol>
           <Input v-model="selectPayload.KEYW" placeholder="请输入关键词" @on-enter="selectBtn"></Input>
@@ -11,7 +11,7 @@
           <Button type="primary" @click.native="selectBtn">查找</Button>
         </SelectCol>
       </Row>
-    </div>
+    </div> -->
     <!-- 筛选 end -->
     <!-- table start -->
     <Table
@@ -59,18 +59,23 @@ export default {
     },
     getProgramList (params) {
       let payload = Object.assign({}, this.selectPayload, params || {})
-      this.$send('getAccList', payload).then((res) => {
+      this.$send('getAccList', {data: payload}).then((res) => {
+        console.log(res, 111)
         if (res.error === 0) {
-          this.ProgramParams = res.obj
+          this.ProgramParams = res.data
         } else {
           this.$Message.error('获取子程序管理失败，请稍后重试！')
         }
-      }).catch(() => {
+      }).catch((err) => {
+        console.log(err, 222)
         this.$Message.error('获取子程序管理装失败，请稍后重试！')
       })
     }
   },
   activated () {
+    this.getProgramList(this.pagePayload)
+  },
+  created () {
     this.getProgramList(this.pagePayload)
   }
 }
