@@ -1,10 +1,20 @@
 
 import AdminRow from './AdminRow'
 import SelectCol from './SelectCol'
+import AdminInputNumber from './AdminInputNumber'
+import DateSelect from './DateSelect'
+import Daterange from './Daterange'
+import TagsInput from './TagsInput'
+import TagsText from './TagsText'
 
 const components = [
   AdminRow,
-  SelectCol
+  SelectCol,
+  AdminInputNumber,
+  DateSelect,
+  Daterange,
+  TagsInput,
+  TagsText
 ]
 
 const install = function install (Vue) {

@@ -1,12 +1,10 @@
 <template>
   <div class="AdminRow">
     <Row>
-      <Col :xs="0" :md="1">&nbsp;</Col>
-      <Col :xs="12" :md="10">
+      <Col :xs="12">
         <slot name="one"/>
       </Col>
-      <Col :xs="0" :md="1">&nbsp;</Col>
-      <Col :xs="12" :md="10">
+      <Col :xs="12">
         <slot name="two"/>
       </Col>
     </Row>
