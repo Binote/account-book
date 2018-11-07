@@ -1,5 +1,5 @@
 // const {localStorage} = require('./localStorage')
-import localStorage from './localStorage'
+import localStorage from '../utils/localStorage'
 const md5 = require('md5')
 const listen = require('../utils/ipc').listen
 const handleListen = require('./handleListen')
