@@ -37,8 +37,8 @@
     }
 </style>
 <template>
-    <div class="layout">
-        <Layout>
+    <div class="layout" style="height:100%">
+        <Layout style="height:100%">
             <Sider breakpoint="md" collapsible :collapsed-width="78" v-model="isCollapsed">
                 <Menu active-name="/statistical" theme="dark" width="auto" :class="menuitemClasses"
                 @on-select="handleMenu">
