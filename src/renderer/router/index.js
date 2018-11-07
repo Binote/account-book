@@ -28,7 +28,11 @@ export default new Router({
     },
     {
       path: '*',
-      redirect: '/'
+      name: '404',
+      components: {
+        layout: Layout,
+        content: () => import('@/views/error/404')
+      }
     }
   ]
 })

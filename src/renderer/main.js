@@ -1,7 +1,7 @@
 import Vue from 'vue'
 // import axios from 'axios'
 import iview from 'iview'
-
+import Components from './components'
 import 'iview/dist/styles/iview.css'
 
 import App from './App'
@@ -14,6 +14,7 @@ Vue.prototype.$send = send
 Vue.config.productionTip = false
 
 Vue.use(iview)
+Vue.use(Components)
 
 /* eslint-disable no-new */
 new Vue({

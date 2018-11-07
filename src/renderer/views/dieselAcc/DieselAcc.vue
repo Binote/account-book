@@ -16,17 +16,56 @@
     <!-- table start -->
     <Table
       :columns='tableColumnList'
-      :data='ProgramParams.list'
+      :data='params.list'
     ></Table>
     <!-- table end -->
+    <Modal
+      loading
+      v-model="modalObj.off"
+      :title="modalObj.title"
+    >
+      <Form ref="form" :label-width="50" :model="postdata" :rules="ruleInline">
+        <AdminRow>
+          <FormItem prop="plate_num" slot="one" label="车牌">
+            <AutoComplete
+              :filter-method="filterMethod"
+              v-model="postdata.plate_num"
+              :data="plate_num_data"
+              placeholder="请输入车牌号"
+              >
+            </AutoComplete>
+          </FormItem>
+          <FormItem prop="car_team" slot="two" label="车队">
+            <AutoComplete
+              :filter-method="filterMethod"
+              v-model="postdata.car_team"
+              :data="car_team_data"
+              placeholder="请输入车牌号"
+              >
+            </AutoComplete>
+          </FormItem>
+        </AdminRow>
+      </Form>
+      <div slot="footer">
+        <Button type="primary">确认</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 <script>
 
 export default {
-  name: 'Repertory',
+  name: 'DieselAcc',
   data () {
     return {
+      modalObj: {
+        off: true,
+        title: '新增'
+      },
+      ruleInline: {},
+      postdata: {},
+      plate_num_data: ['111', '222', '333', '444', '555', '666', '777'],
+      car_team_data: ['111', '222'],
       // 筛选 start
       selectPayload: {},
       // 可选择列的 table column
@@ -38,15 +77,9 @@ export default {
           sortable: true
         }
       ],
-      ProgramParams: {
-        list: [],
-        page: {
-          currentPage: 1,
-          totalResult: 1
-        }
-      },
-      // table change page data
-      pagePayload: {}
+      params: {
+        list: []
+      }
     }
   },
   methods: {
@@ -62,7 +95,7 @@ export default {
       this.$send('getAccList', {data: payload}).then((res) => {
         console.log(res, 111)
         if (res.error === 0) {
-          this.ProgramParams = res.data
+          this.params = res.data
         } else {
           this.$Message.error('获取子程序管理失败，请稍后重试！')
         }
@@ -70,6 +103,15 @@ export default {
         console.log(err, 222)
         this.$Message.error('获取子程序管理装失败，请稍后重试！')
       })
+    },
+    filterMethod (value, option) {
+      console.log(value, 3223332)
+      console.log(typeof option, 21222)
+      // if (option) {
+      //   // return option.toUpperCase().indexOf(value.toUpperCase()) !== -1
+      //   return true
+      // } else { return true }
+      return option.toUpperCase().indexOf(value.toUpperCase()) !== -1
     }
   },
   activated () {

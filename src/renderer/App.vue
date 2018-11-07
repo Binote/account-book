@@ -4,7 +4,9 @@
     <router-view name="layout">
 
         <transition name="fadeTran">
-          <router-view name="content"></router-view>
+          <keep-alive>
+            <router-view name="content"></router-view>
+          </keep-alive>
         </transition>
 
       </router-view>
