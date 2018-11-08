@@ -115,7 +115,7 @@ export default {
       },
       ruleInline: {},
       postdata: {
-        diesel_unit_price: Number(this.$localStorage.getItem('diesel_unit_price'))
+        diesel_unit_price: Number(this.$localStorage.getItem('diesel_unit_price')) || null
       },
       plate_num_data: ['111', '222', '333', '444', '555', '666', '777'],
       car_team_data: ['111', '222'],
@@ -163,7 +163,7 @@ export default {
       console.log(val)
     },
     handle_diesel_unit_price_hange (val) {
-      this.$localStorage.setItem('diesel_unit_price', val)
+      this.$localStorage.setItem('diesel_unit_price', val || '')
     },
     handle_diesel_unit_hange (val) {
       this.postdata.diesel_tot_price = val * this.postdata.diesel_unit_price
