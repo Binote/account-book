@@ -50,7 +50,7 @@
                         <Icon type="ios-list-box" />
                         <span>加油记账</span>
                     </MenuItem>
-                    <MenuItem name="/driver">
+                    <MenuItem name="/drivers">
                         <Icon type="md-people" />
                         <span>司机管理</span>
                     </MenuItem>
