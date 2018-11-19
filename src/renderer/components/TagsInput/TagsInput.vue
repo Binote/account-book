@@ -67,7 +67,7 @@ export default {
   },
   watch: {
     value (val) {
-      this.valueInfo = val.split(',')
+      if (this.value) { this.valueInfo = this.value.split(',') }
     },
     valueInfo () {
       if (this.valueInfo[0] === '') {
@@ -78,7 +78,7 @@ export default {
     }
   },
   created () {
-    this.valueInfo = this.value.split(',')
+    if (this.value) { this.valueInfo = this.value.split(',') }
   }
 }
 </script>

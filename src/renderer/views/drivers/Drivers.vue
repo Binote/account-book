@@ -1,5 +1,8 @@
 <template>
   <div class="Drivers">
+    <div class="clearfix">
+      <Button @click="add" class="add-btn" type="primary"><Icon type="md-add"></Icon>&nbsp;新增司机</Button>
+    </div>
     <!-- 筛选 start-->
     <!-- <div class="select-wrapper">
       <Row>
@@ -17,6 +20,7 @@
     <Table
       :columns='tableColumnList'
       :data='params.list'
+      border
     ></Table>
     <!-- table end -->
     <Modal
@@ -27,67 +31,27 @@
       <Form ref="form" :label-width="70" :model="postdata" :rules="ruleInline">
         <AdminRow>
           <FormItem prop="plate_num" slot="one" label="车牌">
-            <AutoComplete
-              :filter-method="filterMethod"
+            <Input
               v-model="postdata.plate_num"
-              :data="plate_num_data"
               placeholder="请输入车牌号"
-              @on-select="plate_num_sel"
               >
-            </AutoComplete>
+            </Input>
           </FormItem>
           <FormItem prop="car_team" slot="two" label="车队">
-            <AutoComplete
-              :filter-method="filterMethod"
+            <Input
               v-model="postdata.car_team"
-              :data="car_team_data"
               placeholder="请输入车队名称"
               >
-            </AutoComplete>
+            </Input>
           </FormItem>
         </AdminRow>
         <AdminRow>
           <FormItem prop="driver_name" slot="one" label="司机">
-            <AutoComplete
-              :filter-method="filterMethod"
+            <Input
               v-model="postdata.driver_name"
-              :data="driver_name_data"
               placeholder="请输入司机姓名"
               >
-            </AutoComplete>
-          </FormItem>
-          <FormItem prop="diesel_unit_price" slot="two" label="柴油单价">
-            <AdminInputNumber
-              v-model="postdata.diesel_unit_price"
-               placeholder="请输入柴油单价"
-               @on-change="handle_diesel_unit_price_hange"
-              ></AdminInputNumber>
-          </FormItem>
-        </AdminRow>
-        <AdminRow>
-          <FormItem prop="diesel_unit" slot="one" label="柴油升数">
-            <AdminInputNumber
-              v-model="postdata.diesel_unit"
-              placeholder="请输入柴油升数"
-              @on-change="handle_diesel_unit_hange"
-              >
-            </AdminInputNumber>
-          </FormItem>
-          <FormItem prop="diesel_tot_price" slot="two" label="柴油总价">
-            <AdminInputNumber
-              v-model="postdata.diesel_tot_price"
-               placeholder="请输入柴油总价"
-               @on-change="handle_diesel_tot_price_hange"
-              ></AdminInputNumber>
-          </FormItem>
-        </AdminRow>
-        <AdminRow>
-          <FormItem prop="date" slot="one" label="加油日期">
-            <DateSelect
-              v-model="postdata.date"
-              placeholder="请输入加油日期"
-              >
-            </DateSelect>
+            </Input>
           </FormItem>
           <FormItem prop="remark" slot="two" label="备注">
             <TagsInput
@@ -98,7 +62,7 @@
         </AdminRow>
       </Form>
       <div slot="footer">
-        <Button type="primary">确认</Button>
+        <Button type="primary" @click="handleDriver('form')">确认</Button>
       </div>
     </Modal>
   </div>
@@ -108,27 +72,55 @@
 export default {
   name: 'Drivers',
   data () {
+    // let that = this
+    const that = this
     return {
       modalObj: {
-        off: true,
+        off: false,
         title: '新增'
       },
       ruleInline: {},
-      postdata: {
-        diesel_unit_price: Number(this.$localStorage.getItem('diesel_unit_price')) || null
-      },
-      plate_num_data: ['111', '222', '333', '444', '555', '666', '777'],
-      car_team_data: ['111', '222'],
-      driver_name_data: [],
+      postdata: {},
       // 筛选 start
       selectPayload: {},
       // 可选择列的 table column
       tableColumnList: [
         {
-          title: '子程序名称',
-          key: 'repertoryName',
+          title: '车牌',
+          key: 'plate_num',
           align: 'center',
           sortable: true
+        },
+        {
+          title: '车队',
+          key: 'car_team',
+          align: 'center',
+          sortable: true
+        },
+        {
+          title: '司机',
+          key: 'driver_name',
+          align: 'center',
+          sortable: true
+        },
+        {
+          title: '备注',
+          key: 'remark',
+          align: 'center',
+          render (h, {row}) {
+            return h('TagsText', {
+              props: {
+                value: row.remark
+              }
+            })
+          }
+        },
+        {
+          title: '操作',
+          align: 'center'
+          // render (h, {row}) {
+          //   return <div>123123</div>
+          // }
         }
       ],
       params: {
@@ -137,49 +129,69 @@ export default {
     }
   },
   methods: {
+    add () {
+      this.modalObj = {
+        off: true,
+        title: '新增'
+      }
+      this.postdata = {}
+    },
+    edit (row) {
+      this.modalObj = {
+        off: true,
+        title: '编辑'
+      }
+      this.postdata = {...row}
+    },
     /* 筛选 end */
     clearSelectParams () {
       this.selectPayload = {}
     },
     selectBtn () {
-      this.getProgramList()
+      this.getDriverList()
     },
-    getProgramList (params) {
+    getDriverList (params) {
       let payload = Object.assign({}, this.selectPayload, params || {})
-      this.$send('getAccList', {data: payload}).then((res) => {
+      this.$send('getDriverList', {data: payload}).then((res) => {
         if (res.error === 0) {
-          this.params = res.data
+          this.params = {...res.data}
+          console.log(res.data)
         } else {
-          this.$Message.error('获取子程序管理失败，请稍后重试！')
+          this.$Message.error('获取司机列表失败，请联系开发人员或者到git上提交 Issues！')
         }
       }).catch(() => {
-        this.$Message.error('获取子程序管理装失败，请稍后重试！')
+        this.$Message.error('获取司机列表装失败，请联系开发人员或者到git上提交 Issues！')
       })
     },
-    filterMethod (value, option) {
-      return option.toUpperCase().indexOf(value.toUpperCase()) !== -1
-    },
-    plate_num_sel (val) {
-      console.log(val)
-    },
-    handle_diesel_unit_price_hange (val) {
-      this.$localStorage.setItem('diesel_unit_price', val || '')
-    },
-    handle_diesel_unit_hange (val) {
-      this.postdata.diesel_tot_price = val * this.postdata.diesel_unit_price
-    },
-    handle_diesel_tot_price_hange (val) {
-      this.postdata.diesel_unit = this.percentNum(val, this.postdata.diesel_unit_price)
-    },
-    percentNum (num, num2) {
-      return (Math.round(num / num2 * 100) / 100)
+    handleDriver (ref) {
+      this.$refs[ref].validate(valid => {
+        if (valid) {
+          this.$send('handleDriver', {data: this.postdata}).then((res) => {
+            if (res.error === 0) {
+              console.log(res)
+              this.$Message.success('保存成功！')
+              this.postdata.driver_name = ''
+              this.postdata.plate_num = ''
+              this.modalObj.off = false
+              this.getDriverList()
+            } else {
+              this.$Message.error('保存失败，请联系开发人员或者到git上提交 Issues！')
+            }
+          }).catch((err) => {
+            console.log(err)
+            this.$Message.error('保存失败，请联系开发人员或者到git上提交 Issues！')
+          })
+        } else {
+          this.$Message.error('请根据提示填写数据！')
+        }
+      })
     }
   },
   activated () {
-    this.getProgramList(this.pagePayload)
+    this.getDriverList()
   },
   created () {
-    this.getProgramList(this.pagePayload)
+    this.getDriverList()
   }
 }
 </script>

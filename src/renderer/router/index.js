@@ -27,6 +27,14 @@ export default new Router({
       }
     },
     {
+      path: '/drivers',
+      name: 'drivers',
+      components: {
+        layout: Layout,
+        content: () => import('@/views/drivers/Drivers')
+      }
+    },
+    {
       path: '*',
       name: '404',
       components: {

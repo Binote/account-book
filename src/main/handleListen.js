@@ -1,6 +1,10 @@
 
 const HandleDB = require('./db').default
 // const { join } = require('path')
+const {uuid} = require('../utils/uuid')
+
+const {mkSelectSql, mkInsertSql} = require('./mkSql')
+
 let db = new HandleDB({
   databaseFile: `data/accountbase.db`
 })
@@ -55,32 +59,16 @@ CREATE TABLE if not exists driver_table (
   console.error(err)
 })
 
-const mkSelectSql = (payload, sql) => {
-  let times = 0
-  let paramsArr = []
-  for (let key in payload) {
-    times++
-    let item = payload[key]
-    if (times === 1) {
-      sql += ` where ${key} like '%?%'`
-    } else {
-      sql += ` and ${key} like '%?%'`
-    }
-    paramsArr.push(item)
-  }
-  return {
-    sql,
-    paramsArr
-  }
-}
-
 class ResolveMessage {
   constructor (data, error = 0) {
     this.data = data
     this.error = error
   }
 }
-
+/**
+ *  获取加油记账table数据
+ * @param {*} payload
+ */
 export const getAccList = async (payload) => {
   let sql = 'select * from diesel_acc_book_table'
   let sqlObj = mkSelectSql(payload, sql)
@@ -100,4 +88,44 @@ export const getAccList = async (payload) => {
   // }).catch((err) => {
   //   return Promise.reject(err)
   // })
+}
+/**
+ *  获取加油记账table数据
+ * @param {*} payload
+ */
+export const getDriverList = async (payload) => {
+  let sql = 'select * from driver_table'
+  let sqlObj = mkSelectSql(payload, sql)
+  sql = sqlObj.sql
+
+  let res
+  try {
+    res = await db.sql(sql, sqlObj.paramsArr, 'all')
+    return Promise.resolve(new ResolveMessage({list: res}))
+  } catch (error) {
+    return Promise.reject(error)
+  }
+}
+/**
+ * 新增或编辑司机
+ * @param {*} payload
+ */
+export const handleDriver = async (payload) => {
+  let sql = ''
+  if (payload.driver_id) {
+
+  } else {
+    sql += 'insert into driver_table ('
+    let sqlObj = mkInsertSql(payload, sql)
+    sql = sqlObj.sql + ',driver_id)' + sqlObj.vals + ',?)'
+    console.log(sql)
+    sqlObj.paramsArr.push(uuid())
+    let res
+    try {
+      res = await db.sql(sql, sqlObj.paramsArr)
+      return Promise.resolve(new ResolveMessage({msg: res}))
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  }
 }

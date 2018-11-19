@@ -59,7 +59,7 @@
             </Sider>
             <Layout>
                 <Header class="layout-header-bar"></Header>
-                <Content :style="{margin: '20px', background: '#fff', minHeight: '400px'}">
+                <Content :style="{margin: '20px', background: '#fff', minHeight: '400px',padding:'8px'}">
                     <slot/>
                 </Content>
                 <!-- 返回到顶端 -->
