@@ -13,11 +13,11 @@ export const mkSelectSql = (payload, sql) => {
       paramsArr.push(...JSON.parse(item))
     } else {
       if (times === 1) {
-        sql += ` where ${key} like '%?%'`
+        sql += ` where ${key} like ?`
       } else {
-        sql += ` and ${key} like '%?%'`
+        sql += ` and ${key} like ?`
       }
-      paramsArr.push(item)
+      paramsArr.push('%' + item + '%')
     }
   }
   return {
@@ -45,5 +45,23 @@ export const mkInsertSql = (payload, sql) => {
     sql,
     paramsArr,
     vals
+  }
+}
+export const mkUpdateSql = (payload, sql) => {
+  let times = 0
+  let paramsArr = []
+  for (let key in payload) {
+    times++
+    let item = payload[key]
+    if (times === 1) {
+      sql += key + ' = ?'
+    } else {
+      sql += ', ' + key + ' = ?'
+    }
+    paramsArr.push(item)
+  }
+  return {
+    sql,
+    paramsArr
   }
 }

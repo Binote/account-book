@@ -4,23 +4,30 @@
       <Button @click="add" class="add-btn" type="primary"><Icon type="md-add"></Icon>&nbsp;新增司机</Button>
     </div>
     <!-- 筛选 start-->
-    <!-- <div class="select-wrapper">
+    <div class="select-wrapper">
       <Row>
         <SelectCol>
-          <Input v-model="selectPayload.KEYW" placeholder="请输入关键词" @on-enter="selectBtn"></Input>
+          <Input v-model="selectPayload.plate_num" placeholder="请输入车牌" @on-enter="selectBtn"></Input>
+        </SelectCol>
+         <SelectCol>
+          <Input v-model="selectPayload.car_team" placeholder="请输入车队" @on-enter="selectBtn"></Input>
+        </SelectCol>
+         <SelectCol>
+          <Input v-model="selectPayload.driver_name" placeholder="请输入司机名字" @on-enter="selectBtn"></Input>
         </SelectCol>
         <SelectCol>
           <Button @click="clearSelectParams">清空</Button>
           <Button type="primary" @click.native="selectBtn">查找</Button>
         </SelectCol>
       </Row>
-    </div> -->
+    </div>
     <!-- 筛选 end -->
     <!-- table start -->
     <Table
       :columns='tableColumnList'
       :data='params.list'
       border
+      size="small"
     ></Table>
     <!-- table end -->
     <Modal
@@ -72,8 +79,8 @@
 export default {
   name: 'Drivers',
   data () {
-    // let that = this
-    const that = this
+    let that = this
+    // const that = this
     return {
       modalObj: {
         off: false,
@@ -85,6 +92,12 @@ export default {
       selectPayload: {},
       // 可选择列的 table column
       tableColumnList: [
+        {
+          title: '序号',
+          type: 'index',
+          align: 'center',
+          width: 60
+        },
         {
           title: '车牌',
           key: 'plate_num',
@@ -117,10 +130,12 @@ export default {
         },
         {
           title: '操作',
-          align: 'center'
-          // render (h, {row}) {
-          //   return <div>123123</div>
-          // }
+          align: 'center',
+          render (h, {row}) {
+            return <i-button type='primary' size='small' onClick={() => {
+              that.edit(row)
+            }}>编辑</i-button>
+          }
         }
       ],
       params: {
@@ -141,7 +156,8 @@ export default {
         off: true,
         title: '编辑'
       }
-      this.postdata = {...row}
+      let {_index, _rowKey, ...rowData} = row
+      this.postdata = rowData
     },
     /* 筛选 end */
     clearSelectParams () {
@@ -152,6 +168,7 @@ export default {
     },
     getDriverList (params) {
       let payload = Object.assign({}, this.selectPayload, params || {})
+      console.log(payload)
       this.$send('getDriverList', {data: payload}).then((res) => {
         if (res.error === 0) {
           this.params = {...res.data}

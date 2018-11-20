@@ -3,7 +3,7 @@ const HandleDB = require('./db').default
 // const { join } = require('path')
 const {uuid} = require('../utils/uuid')
 
-const {mkSelectSql, mkInsertSql} = require('./mkSql')
+const {mkSelectSql, mkInsertSql, mkUpdateSql} = require('./mkSql')
 
 let db = new HandleDB({
   databaseFile: `data/accountbase.db`
@@ -97,7 +97,7 @@ export const getDriverList = async (payload) => {
   let sql = 'select * from driver_table'
   let sqlObj = mkSelectSql(payload, sql)
   sql = sqlObj.sql
-
+  console.log(sql)
   let res
   try {
     res = await db.sql(sql, sqlObj.paramsArr, 'all')
@@ -111,9 +111,21 @@ export const getDriverList = async (payload) => {
  * @param {*} payload
  */
 export const handleDriver = async (payload) => {
+  console.log(payload.driver_id)
   let sql = ''
   if (payload.driver_id) {
-
+    sql += 'update driver_table set '
+    let sqlObj = mkUpdateSql(payload, sql)
+    sql = sqlObj.sql + ' where driver_id = ?'
+    console.log(sql)
+    sqlObj.paramsArr.push(payload.driver_id)
+    let res
+    try {
+      res = await db.sql(sql, sqlObj.paramsArr)
+      return Promise.resolve(new ResolveMessage({msg: res}))
+    } catch (error) {
+      return Promise.reject(error)
+    }
   } else {
     sql += 'insert into driver_table ('
     let sqlObj = mkInsertSql(payload, sql)

@@ -26,5 +26,5 @@
       ]
     }
   },
-  "plugins": ["transform-runtime"]
+  "plugins": ["transform-runtime","babel-plugin-transform-vue-jsx"]
 }
