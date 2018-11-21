@@ -40,12 +40,8 @@
     <div class="layout" style="height:100%">
         <Layout style="height:100%">
             <Sider breakpoint="md" collapsible :collapsed-width="78" v-model="isCollapsed">
-                <Menu active-name="/statistical" theme="dark" width="auto" :class="menuitemClasses"
+                <Menu active-name="/diesel_acc" theme="dark" width="auto" :class="menuitemClasses"
                 @on-select="handleMenu">
-                    <MenuItem name="/statistical">
-                        <Icon type="md-stats" />
-                        <span>统计</span>
-                    </MenuItem>
                     <MenuItem name="/diesel_acc">
                         <Icon type="ios-list-box" />
                         <span>加油记账</span>
@@ -58,7 +54,7 @@
                 <div slot="trigger"></div>
             </Sider>
             <Layout>
-                <Header class="layout-header-bar"></Header>
+                <!-- <Header class="layout-header-bar"></Header> -->
                 <Content :style="{margin: '20px', background: '#fff', minHeight: '400px',padding:'8px'}">
                     <slot/>
                 </Content>

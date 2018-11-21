@@ -6,6 +6,7 @@ import DateSelect from './DateSelect'
 import Daterange from './Daterange'
 import TagsInput from './TagsInput'
 import TagsText from './TagsText'
+import AdminSwitch from './AdminSwitch'
 
 const components = [
   AdminRow,
@@ -14,7 +15,8 @@ const components = [
   DateSelect,
   Daterange,
   TagsInput,
-  TagsText
+  TagsText,
+  AdminSwitch
 ]
 
 const install = function install (Vue) {

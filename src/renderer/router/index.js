@@ -12,13 +12,6 @@ export default new Router({
       component: () => import('@/views/login/Login')
     },
     {
-      path: '/statistical',
-      name: 'statistical',
-      components: {
-        layout: Layout
-      }
-    },
-    {
       path: '/diesel_acc',
       name: 'diesel_acc',
       components: {

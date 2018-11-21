@@ -18,6 +18,6 @@ listen('login', (res) => {
   }
 })
 listen('getAccList', handleListen.getAccList)
-
+listen('handleAcc', handleListen.handleAcc)
 listen('getDriverList', handleListen.getDriverList)
 listen('handleDriver', handleListen.handleDriver)

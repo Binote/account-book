@@ -60,6 +60,14 @@
               >
             </Input>
           </FormItem>
+          <FormItem prop="status" slot="two" label="状态">
+            <AdminSwitch
+              v-model="postdata.status"
+              >
+            </AdminSwitch>
+          </FormItem>
+          </AdminRow>
+          <AdminRow>
           <FormItem prop="remark" slot="two" label="备注">
             <TagsInput
               v-model="postdata.remark"
@@ -117,6 +125,19 @@ export default {
           sortable: true
         },
         {
+          title: '状态',
+          key: 'status',
+          align: 'center',
+          sortable: true,
+          render (h, {row}) {
+            if (row.status === '1') {
+              return <i-button type='success' size='small'>启用</i-button>
+            } else {
+              return <i-button type='error' size='small'>禁用</i-button>
+            }
+          }
+        },
+        {
           title: '备注',
           key: 'remark',
           align: 'center',
@@ -131,6 +152,7 @@ export default {
         {
           title: '操作',
           align: 'center',
+          width: 80,
           render (h, {row}) {
             return <i-button type='primary' size='small' onClick={() => {
               that.edit(row)
@@ -149,7 +171,9 @@ export default {
         off: true,
         title: '新增'
       }
-      this.postdata = {}
+      this.postdata = {
+        status: '1'
+      }
     },
     edit (row) {
       this.modalObj = {
@@ -189,7 +213,7 @@ export default {
               this.$Message.success('保存成功！')
               this.postdata.driver_name = ''
               this.postdata.plate_num = ''
-              this.modalObj.off = false
+              this.driver_id = ''
               this.getDriverList()
             } else {
               this.$Message.error('保存失败，请联系开发人员或者到git上提交 Issues！')

@@ -34,7 +34,7 @@ export default {
     }
   },
   created () {
-    this.valueInfo = this.value.split(',')
+    if (this.value) { this.valueInfo = this.value.split(',') }
   }
 }
 </script>
