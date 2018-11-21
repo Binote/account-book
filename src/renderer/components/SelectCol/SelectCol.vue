@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Col class="select-wrapper-col" :xs="24" :md="5">
+    <Col class="select-wrapper-col" :xs="24" :md="4">
       <slot></slot>
     </Col>
   </div>

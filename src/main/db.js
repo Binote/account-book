@@ -56,6 +56,7 @@ class HandleDB {
     let _self = this
     return new Promise((resolve, reject) => {
       _self.db.exec(sentence, function (err) {
+        console.log(err)
         if (err) reject(new Error(err))
         resolve(`表创建成功 / 已存在,不需要重新创建该表`)
       })
@@ -85,6 +86,7 @@ class HandleDB {
       _self.db[mode](sql, param,
         function (err, data) { // data: Array, Object
           if (err) {
+            console.log(err)
             reject(new Error(err))
           } else {
             if (data) {

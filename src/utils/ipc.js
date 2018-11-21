@@ -11,10 +11,13 @@ export let send = (eventName, options = {}) => {
   const { data } = options
   const id = uuid()
   const responseEvent = `${eventName}_res_${id}`
-
+  console.log('send data start')
+  console.log(data)
+  console.log('send data end')
   return new Promise((resolve, reject) => {
     // 这里使用 once 监听，响应到达后就销毁
     ipcRenderer.once(responseEvent, (event, response) => {
+      console.log(response.data)
       if (response.code === 200) {
         resolve(response.data)
       } else {
@@ -39,9 +42,11 @@ export const listen = (eventName, handler) => {
     try {
       response.data = await handler(data)
     } catch (err) {
+      console.log(err)
       response.code = err.code || 500
       response.data = { message: err.message || '主进程错误。' }
     }
+    console.log(response)
     e.sender.send(`${eventName}_res_${id}`, response)
   })
 }

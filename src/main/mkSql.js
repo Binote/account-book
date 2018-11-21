@@ -4,13 +4,17 @@ export const mkSelectSql = (payload, sql) => {
   for (let key in payload) {
     times++
     let item = payload[key]
-    if (key === 'daterange') {
-      if (times === 1) {
-        sql += ` where date >= '?' and date <= '?'`
+    if (key === 'date') {
+      if (payload.date.length > 0) {
+        if (times === 1) {
+          sql += ` where date >= ? and date <= ?`
+        } else {
+          sql += ` and date >= ? and date <= ?`
+        }
+        paramsArr.push(...item)
       } else {
-        sql += ` and date >= '?' and date <= '?'`
+        times--
       }
-      paramsArr.push(...JSON.parse(item))
     } else {
       if (times === 1) {
         sql += ` where ${key} like ?`

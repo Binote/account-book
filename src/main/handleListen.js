@@ -2,7 +2,7 @@
 const HandleDB = require('./db').default
 // const { join } = require('path')
 const {uuid} = require('../utils/uuid')
-const _ = require('lodash')
+// const _ = require('lodash')
 const {mkSelectSql, mkInsertSql, mkUpdateSql} = require('./mkSql')
 
 let db = new HandleDB({
@@ -51,14 +51,14 @@ CREATE TABLE if not exists driver_table (
   driver_name VARCHAR (10)  NOT NULL,
   plate_num   VARCHAR (20)  NOT NULL,
   car_team    VARCHAR (10)  NOT NULL,
-  status    VARCHAR (10)  NOT NULL,
+  status    VARCHAR (10) ,
   remark      VARCHAR (255)
 );`
   return db.createTable(sentence)
 }).then((result) => {
-  console.log(result)
+  console.log(result, 555)
 }).catch((err) => {
-  console.error(err)
+  console.error(err, 444)
 })
 
 class ResolveMessage {
@@ -75,7 +75,7 @@ export const getAccList = async (payload) => {
   let sql = 'select * from diesel_acc_book_table'
   let sqlObj = mkSelectSql(payload, sql)
   sql = sqlObj.sql
-
+  console.log(sqlObj)
   let res
   try {
     res = await db.sql(sql, sqlObj.paramsArr, 'all')
@@ -94,7 +94,7 @@ export const getAccList = async (payload) => {
  * @param {*} payload
  */
 export const handleAcc = async (payload) => {
-  console.log(payload.diesel_acc_id)
+  console.log(111)
   let sql = ''
   if (payload.diesel_acc_id) {
     sql += 'update diesel_acc_book_table set '

@@ -1,22 +1,36 @@
 <template>
   <div class="DieselAcc">
+    <div class="clearfix">
+      <Button @click="add" class="add-btn" type="primary"><Icon type="md-add"></Icon>&nbsp;新增条目</Button>
+    </div>
     <!-- 筛选 start-->
-    <!-- <div class="select-wrapper">
+    <div class="select-wrapper">
       <Row>
         <SelectCol>
-          <Input v-model="selectPayload.KEYW" placeholder="请输入关键词" @on-enter="selectBtn"></Input>
+          <Input v-model="selectPayload.plate_num" placeholder="请输入车牌" @on-enter="selectBtn"></Input>
+        </SelectCol>
+         <SelectCol>
+          <Input v-model="selectPayload.car_team" placeholder="请输入车队" @on-enter="selectBtn"></Input>
+        </SelectCol>
+         <SelectCol>
+          <Input v-model="selectPayload.driver_name" placeholder="请输入司机名字" @on-enter="selectBtn"></Input>
+        </SelectCol>
+        <SelectCol>
+          <Daterange v-model="selectPayload.date" placeholder="请选择时间段"></Daterange>
         </SelectCol>
         <SelectCol>
           <Button @click="clearSelectParams">清空</Button>
           <Button type="primary" @click.native="selectBtn">查找</Button>
         </SelectCol>
       </Row>
-    </div> -->
+    </div>
     <!-- 筛选 end -->
     <!-- table start -->
     <Table
       :columns='tableColumnList'
       :data='params.list'
+      border
+      size="small"
     ></Table>
     <!-- table end -->
     <Modal
@@ -98,7 +112,7 @@
         </AdminRow>
       </Form>
       <div slot="footer">
-        <Button type="primary">确认</Button>
+        <Button type="primary" @click="handleAcc('form')">确认</Button>
       </div>
     </Modal>
   </div>
@@ -108,9 +122,10 @@ import { getObjectData, getArrVal } from '@/../utils/mkdata'
 export default {
   name: 'DieselAcc',
   data () {
+    let that = this
     return {
       modalObj: {
-        off: true,
+        off: false,
         title: '新增'
       },
       ruleInline: {},
@@ -125,10 +140,74 @@ export default {
       // 可选择列的 table column
       tableColumnList: [
         {
-          title: '子程序名称',
-          key: 'repertoryName',
+          title: '序号',
+          type: 'index',
+          align: 'center',
+          width: 60
+        },
+        {
+          title: '车牌',
+          key: 'plate_num',
           align: 'center',
           sortable: true
+        },
+        {
+          title: '车队',
+          key: 'car_team',
+          align: 'center',
+          sortable: true
+        },
+        {
+          title: '司机',
+          key: 'driver_name',
+          align: 'center',
+          sortable: true
+        },
+        {
+          title: '柴油单价',
+          key: 'diesel_unit_price',
+          align: 'center',
+          sortable: true
+        },
+        {
+          title: '柴油升数',
+          key: 'diesel_unit',
+          align: 'center',
+          sortable: true
+        },
+        {
+          title: '总价',
+          key: 'diesel_tot_price',
+          align: 'center',
+          sortable: true
+        },
+        {
+          title: '加油日期',
+          key: 'date',
+          align: 'center',
+          sortable: true
+        },
+        {
+          title: '备注',
+          key: 'remark',
+          align: 'center',
+          render (h, {row}) {
+            return h('TagsText', {
+              props: {
+                value: row.remark
+              }
+            })
+          }
+        },
+        {
+          title: '操作',
+          align: 'center',
+          width: 80,
+          render (h, {row}) {
+            return <i-button type='primary' size='small' onClick={() => {
+              that.edit(row)
+            }}>编辑</i-button>
+          }
         }
       ],
       params: {
@@ -139,6 +218,23 @@ export default {
     }
   },
   methods: {
+    add () {
+      this.modalObj = {
+        off: true,
+        title: '新增'
+      }
+      this.postdata = {
+        diesel_unit_price: Number(this.$localStorage.getItem('diesel_unit_price')) || null
+      }
+    },
+    edit (row) {
+      this.modalObj = {
+        off: true,
+        title: '编辑'
+      }
+      let {_index, _rowKey, ...rowData} = row
+      this.postdata = rowData
+    },
     /* 筛选 end */
     clearSelectParams () {
       this.selectPayload = {}
@@ -165,8 +261,7 @@ export default {
           this.driverObj = getObjectData(res.data.list, 'plate_num')
           this.plate_num_data = getArrVal(res.data.list, 'plate_num')
           this.car_team_data = getArrVal(res.data.list, 'car_team')
-          this.driver_name_data = getArrVal(res.data.list, 'driver_names')
-          console.log(res.data)
+          this.driver_name_data = getArrVal(res.data.list, 'driver_name')
         } else {
           this.$Message.error('获取司机列表失败，请联系开发人员或者到git上提交 Issues！')
         }

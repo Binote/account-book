@@ -194,13 +194,15 @@ export default {
       let payload = Object.assign({}, this.selectPayload, params || {})
       console.log(payload)
       this.$send('getDriverList', {data: payload}).then((res) => {
+        console.log(res.error === 0)
         if (res.error === 0) {
           this.params = {...res.data}
           console.log(res.data)
         } else {
           this.$Message.error('获取司机列表失败，请联系开发人员或者到git上提交 Issues！')
         }
-      }).catch(() => {
+      }).catch((err) => {
+        console.log(err)
         this.$Message.error('获取司机列表装失败，请联系开发人员或者到git上提交 Issues！')
       })
     },

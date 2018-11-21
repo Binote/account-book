@@ -90,7 +90,7 @@ export default {
         if (res.error === 0) {
           this.$Message.success(res.data.message)
           this.$router.push(
-            {path: '/statistical'}
+            {path: '/diesel_acc'}
           )
         } else {
           this.$Message.error('登录失败，请联系管理员或到git提交Issues')
