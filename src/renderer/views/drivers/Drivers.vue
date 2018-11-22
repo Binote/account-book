@@ -2,6 +2,11 @@
   <div class="Drivers">
     <div class="clearfix">
       <Button @click="add" class="add-btn" type="primary"><Icon type="md-add"></Icon>&nbsp;新增司机</Button>
+      <ExportXlsx
+        :headerMap='tableColumnList'
+        :list='params.list'
+        pagename='司机名单'
+      ></ExportXlsx>
     </div>
     <!-- 筛选 start-->
     <div class="select-wrapper">
@@ -94,7 +99,11 @@ export default {
         off: false,
         title: '新增'
       },
-      ruleInline: {},
+      ruleInline: {
+        driver_name: {required: true, type: 'string', message: '请填写司机姓名', trigger: 'change'},
+        plate_num: { required: true, message: '请填写车牌号', trigger: 'change' },
+        car_team: { required: true, message: '请填写车队名称', trigger: 'change' }
+      },
       postdata: {},
       // 筛选 start
       selectPayload: {},
@@ -218,7 +227,9 @@ export default {
               this.driver_id = ''
               this.getDriverList()
             } else {
-              this.$Message.error('保存失败，请联系开发人员或者到git上提交 Issues！')
+              if (res.error === 1005) {
+                this.$Message.error('车牌号重复，请检查后再提交！')
+              } else { this.$Message.error('保存失败，请联系开发人员或者到git上提交 Issues！') }
             }
           }).catch((err) => {
             console.log(err)

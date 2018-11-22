@@ -7,6 +7,7 @@ import Daterange from './Daterange'
 import TagsInput from './TagsInput'
 import TagsText from './TagsText'
 import AdminSwitch from './AdminSwitch'
+import ExportXlsx from './ExportXlsx'
 
 const components = [
   AdminRow,
@@ -16,7 +17,8 @@ const components = [
   Daterange,
   TagsInput,
   TagsText,
-  AdminSwitch
+  AdminSwitch,
+  ExportXlsx
 ]
 
 const install = function install (Vue) {

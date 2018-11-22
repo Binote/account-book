@@ -132,12 +132,13 @@ export const handleAcc = async (payload) => {
 }
 
 /**
- *  获取加油记账table数据
+ *  获取司机table数据
  * @param {*} payload
+ * @param {*} outPayload
  */
-export const getDriverList = async (payload) => {
-  let sql = 'select * from driver_table'
-  let sqlObj = mkSelectSql(payload, sql)
+export const getDriverList = async (payload, outPayload) => {
+  let sql = 'select * from driver_table '
+  let sqlObj = mkSelectSql(payload, sql, outPayload)
   sql = sqlObj.sql
   console.log(sql)
   let res
@@ -153,36 +154,44 @@ export const getDriverList = async (payload) => {
  * @param {*} payload
  */
 export const handleDriver = async (payload) => {
-  console.log(payload.driver_id)
   let sql = ''
   if (payload.driver_id) {
-    sql += 'update driver_table set '
-    let sqlObj = mkUpdateSql(payload, sql)
-    sql = sqlObj.sql + ' where driver_id = ?'
-    console.log(sql)
-    sqlObj.paramsArr.push(payload.driver_id)
-    let res
-    try {
-      res = await db.sql(sql, sqlObj.paramsArr)
-      return Promise.resolve(new ResolveMessage({msg: res}))
-    } catch (error) {
-      return Promise.reject(error)
+    let driRes = await getDriverList({plate_num: payload.plate_num}, {driver_id: payload.driver_id})
+    if (driRes.data.list.length > 0) {
+      return Promise.resolve(new ResolveMessage({msg: 'repeat'}, 1005))
+    } else {
+      sql += 'update driver_table set '
+      let sqlObj = mkUpdateSql(payload, sql)
+      sql = sqlObj.sql + ' where driver_id = ?'
+      console.log(sql)
+      sqlObj.paramsArr.push(payload.driver_id)
+      let res
+      try {
+        res = await db.sql(sql, sqlObj.paramsArr)
+        return Promise.resolve(new ResolveMessage({msg: res}))
+      } catch (error) {
+        return Promise.reject(error)
+      }
     }
   } else {
-    // getDriverList({plate_num: payload.plate_num}).then(res => {
-    //   console.log(res)
-    // })
-    sql += 'insert into driver_table ('
-    let sqlObj = mkInsertSql(payload, sql)
-    sql = sqlObj.sql + ',driver_id)' + sqlObj.vals + ',?)'
-    console.log(sql)
-    sqlObj.paramsArr.push(uuid())
-    let res
-    try {
-      res = await db.sql(sql, sqlObj.paramsArr)
-      return Promise.resolve(new ResolveMessage({msg: res}))
-    } catch (error) {
-      return Promise.reject(error)
+    let driRes = await getDriverList({plate_num: payload.plate_num})
+    console.log('+++++++++++++++driRes length log+++++++++++++++++')
+    console.log(driRes.data.list.length)
+    if (driRes.data.list.length > 0) {
+      return Promise.resolve(new ResolveMessage({msg: 'repeat'}, 1005))
+    } else {
+      sql += 'insert into driver_table ('
+      let sqlObj = mkInsertSql(payload, sql)
+      sql = sqlObj.sql + ',driver_id)' + sqlObj.vals + ',?)'
+      console.log(sql)
+      sqlObj.paramsArr.push(uuid())
+      let res
+      try {
+        res = await db.sql(sql, sqlObj.paramsArr)
+        return Promise.resolve(new ResolveMessage({msg: res}))
+      } catch (error) {
+        return Promise.reject(error)
+      }
     }
   }
 }

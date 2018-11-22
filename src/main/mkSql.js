@@ -1,27 +1,44 @@
-export const mkSelectSql = (payload, sql) => {
+export const mkSelectSql = (payload, sql, outPayload) => {
   let times = 0
   let paramsArr = []
   for (let key in payload) {
     times++
     let item = payload[key]
-    if (key === 'date') {
-      if (payload.date.length > 0) {
+    if (item) {
+      if (key === 'startTime') {
         if (times === 1) {
-          sql += ` where date >= ? and date <= ?`
+          sql += ` where date >= ?`
         } else {
-          sql += ` and date >= ? and date <= ?`
+          sql += `and date >= ?`
         }
-        paramsArr.push(...item)
+        paramsArr.push(item)
+      } else if (key === 'endTime') {
+        if (times === 1) {
+          sql += ` where date <= ?`
+        } else {
+          sql += `and date <= ?`
+        }
+        paramsArr.push(item)
       } else {
-        times--
+        if (times === 1) {
+          sql += ` where ${key} like ?`
+        } else {
+          sql += ` and ${key} like ?`
+        }
+        paramsArr.push('%' + item + '%')
       }
-    } else {
+    }
+  }
+  for (let key in outPayload) {
+    times++
+    let item = outPayload[key]
+    if (item) {
       if (times === 1) {
-        sql += ` where ${key} like ?`
+        sql += ` where ${key} != ?`
       } else {
-        sql += ` and ${key} like ?`
+        sql += ` and ${key} != ?`
       }
-      paramsArr.push('%' + item + '%')
+      paramsArr.push(item)
     }
   }
   return {

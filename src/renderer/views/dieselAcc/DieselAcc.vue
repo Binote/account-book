@@ -2,6 +2,11 @@
   <div class="DieselAcc">
     <div class="clearfix">
       <Button @click="add" class="add-btn" type="primary"><Icon type="md-add"></Icon>&nbsp;新增条目</Button>
+      <ExportXlsx
+        :headerMap='tableColumnList'
+        :list='params.list'
+        pagename='加油账本'
+      ></ExportXlsx>
     </div>
     <!-- 筛选 start-->
     <div class="select-wrapper">
@@ -16,7 +21,7 @@
           <Input v-model="selectPayload.driver_name" placeholder="请输入司机名字" @on-enter="selectBtn"></Input>
         </SelectCol>
         <SelectCol>
-          <Daterange v-model="selectPayload.date" placeholder="请选择时间段"></Daterange>
+          <Daterange v-model="date" placeholder="请选择时间段"></Daterange>
         </SelectCol>
         <SelectCol>
           <Button @click="clearSelectParams">清空</Button>
@@ -119,6 +124,7 @@
 </template>
 <script>
 import { getObjectData, getArrVal } from '@/../utils/mkdata'
+const _ = require('lodash')
 export default {
   name: 'DieselAcc',
   data () {
@@ -128,7 +134,16 @@ export default {
         off: false,
         title: '新增'
       },
-      ruleInline: {},
+      date: [],
+      ruleInline: {
+        driver_name: {required: true, type: 'string', message: '请填写司机姓名', trigger: 'change'},
+        plate_num: { required: true, type: 'string', message: '请填写车牌号', trigger: 'change' },
+        car_team: { required: true, type: 'string', message: '请填写车队名称', trigger: 'change' },
+        diesel_unit_price: { required: true, type: 'number', message: '请填写柴油单价', trigger: 'change' },
+        diesel_unit: { required: true, type: 'number', message: '请填写柴油升数', trigger: 'change' },
+        diesel_tot_price: { required: true, type: 'number', message: '请填写柴油总价', trigger: 'change' },
+        date: { required: true, type: 'string', message: '请填写加油日期', trigger: 'change' }
+      },
       postdata: {
         diesel_unit_price: Number(this.$localStorage.getItem('diesel_unit_price')) || null
       },
@@ -217,6 +232,12 @@ export default {
       driverObj: {}
     }
   },
+  watch: {
+    date (val) {
+      this.selectPayload.startTime = val[0]
+      this.selectPayload.endTime = val[1]
+    }
+  },
   methods: {
     add () {
       this.modalObj = {
@@ -257,11 +278,11 @@ export default {
     getDriverList () {
       this.$send('getDriverList', {data: {status: '1'}}).then((res) => {
         if (res.error === 0) {
-          this.params.driverList = {...res.data.list}
+          this.params.driverList = [...res.data.list]
           this.driverObj = getObjectData(res.data.list, 'plate_num')
-          this.plate_num_data = getArrVal(res.data.list, 'plate_num')
-          this.car_team_data = getArrVal(res.data.list, 'car_team')
-          this.driver_name_data = getArrVal(res.data.list, 'driver_name')
+          this.plate_num_data = _.uniq(getArrVal(res.data.list, 'plate_num'))
+          this.car_team_data = _.uniq(getArrVal(res.data.list, 'car_team'))
+          this.driver_name_data = _.uniq(getArrVal(res.data.list, 'driver_name'))
         } else {
           this.$Message.error('获取司机列表失败，请联系开发人员或者到git上提交 Issues！')
         }
@@ -279,7 +300,7 @@ export default {
               this.postdata.driver_name = ''
               this.postdata.plate_num = ''
               this.driver_id = ''
-              this.getDriverList()
+              this.getAccList()
             } else {
               this.$Message.error('保存失败，请联系开发人员或者到git上提交 Issues！')
             }
@@ -293,12 +314,15 @@ export default {
       })
     },
     filterMethod (value, option) {
+      if (!value) { value = '' }
       return option.toUpperCase().indexOf(value.toUpperCase()) !== -1
     },
     plate_num_sel (val) {
-      let obj = this.driverObj[val]
-      this.postdata.car_team = obj.car_team
-      this.postdata.driver_name = obj.driver_name
+      if (val) {
+        let obj = this.driverObj[val]
+        this.postdata.car_team = obj.car_team
+        this.postdata.driver_name = obj.driver_name
+      }
     },
     handle_diesel_unit_price_change (val) {
       this.$localStorage.setItem('diesel_unit_price', val || '')
