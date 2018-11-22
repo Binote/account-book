@@ -83,10 +83,7 @@ export default {
       })
     },
     login () {
-      this.$send('login', {
-        // msg: 'login',
-        data: this.formInline
-      }).then(res => {
+      this.$send('login', this.formInline).then(res => {
         if (res.error === 0) {
           this.$Message.success(res.data.message)
           this.$router.push(

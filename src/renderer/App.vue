@@ -54,15 +54,16 @@ a {
 }
 .clearfix {
 zoom: 1;
+margin-bottom: 10px;
 }
 .pull-right {
   float: right;
 }
 // add button
-.clearfix .add-btn {
-  margin-bottom: 10px;
-  // float: right;
-}
+// .clearfix .add-btn {
+//   margin-bottom: 10px;
+//   // float: right;
+// }
 .edit-wrapper {
   padding: 20px;
 }

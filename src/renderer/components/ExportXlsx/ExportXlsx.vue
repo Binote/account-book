@@ -2,7 +2,7 @@
   <Button type='primary' @click="exportHandel"><Icon type="md-download" />导出到Excel</Button>
 </template>
 <script>
-import {xlsxDown as handleXlsxWork} from '@/../utils/handleXlsxWork'
+// import {xlsxDown as handleXlsxWork} from '@/../utils/handleXlsxWork'
 export default {
   name: 'ExportXlsx',
   props: {
@@ -38,7 +38,13 @@ export default {
       const fileName = defaultFileName
 
       const header = Object.keys(this.setHeaderMap)
-      handleXlsxWork(this.list, this.setHeaderMap, header, fileName)
+      // handleXlsxWork(this.list, this.setHeaderMap, header, fileName)
+      this.$send('handleXlsxWork', {
+        responseList: this.list,
+        headerMap: this.setHeaderMap,
+        header: header,
+        fileName: fileName
+      })
     }
   },
   computed: {

@@ -202,7 +202,7 @@ export default {
     getDriverList (params) {
       let payload = Object.assign({}, this.selectPayload, params || {})
       console.log(payload)
-      this.$send('getDriverList', {data: payload}).then((res) => {
+      this.$send('getDriverList', payload).then((res) => {
         console.log(res.error === 0)
         if (res.error === 0) {
           this.params = {...res.data}
@@ -218,7 +218,7 @@ export default {
     handleDriver (ref) {
       this.$refs[ref].validate(valid => {
         if (valid) {
-          this.$send('handleDriver', {data: this.postdata}).then((res) => {
+          this.$send('handleDriver', this.postdata).then((res) => {
             if (res.error === 0) {
               console.log(res)
               this.$Message.success('保存成功！')

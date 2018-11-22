@@ -265,7 +265,7 @@ export default {
     },
     getAccList (params) {
       let payload = Object.assign({}, this.selectPayload, params || {})
-      this.$send('getAccList', {data: payload}).then((res) => {
+      this.$send('getAccList', payload).then((res) => {
         if (res.error === 0) {
           this.params = res.data
         } else {
@@ -276,7 +276,7 @@ export default {
       })
     },
     getDriverList () {
-      this.$send('getDriverList', {data: {status: '1'}}).then((res) => {
+      this.$send('getDriverList', {status: '1'}).then((res) => {
         if (res.error === 0) {
           this.params.driverList = [...res.data.list]
           this.driverObj = getObjectData(res.data.list, 'plate_num')
@@ -293,7 +293,7 @@ export default {
     handleAcc (ref) {
       this.$refs[ref].validate(valid => {
         if (valid) {
-          this.$send('handleAcc', {data: this.postdata}).then((res) => {
+          this.$send('handleAcc', this.postdata).then((res) => {
             if (res.error === 0) {
               console.log(res)
               this.$Message.success('保存成功！')

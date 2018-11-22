@@ -1,8 +1,11 @@
 // const {localStorage} = require('./localStorage')
 import localStorage from '../utils/localStorage'
+// import {xlsxDown as handleXlsxWork} from '../utils/handleXlsxWork'
 const md5 = require('md5')
 const listen = require('../utils/ipc').listen
 const handleListen = require('./handleListen')
+const {dialog} = require('electron')
+
 class ResolveMessage {
   constructor (data, error = 0) {
     this.data = data
@@ -17,7 +20,21 @@ listen('login', (res) => {
     return Promise.reject(new Error('用户名或密码错误'))
   }
 })
+
 listen('getAccList', handleListen.getAccList)
 listen('handleAcc', handleListen.handleAcc)
 listen('getDriverList', handleListen.getDriverList)
 listen('handleDriver', handleListen.handleDriver)
+
+listen('handleXlsxWork', async (payload) => {
+  // let xlsx = await handleXlsxWork(payload.responseList, payload.headerMap, payload.header, payload.fileName)
+  dialog.showSaveDialog({
+    title: '导出Excel',
+    defaultPath: payload.fileName,
+    message: '导出Excel',
+    filters: [
+      {name: 'Excel', extensions: ['xlsx', 'xls']},
+      {name: 'All Files', extensions: ['*']}
+    ]
+  })
+})

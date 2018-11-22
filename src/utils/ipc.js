@@ -8,7 +8,7 @@ const {uuid} = require('./uuid')
  * @param {Object} options 参数
  */
 export let send = (eventName, options = {}) => {
-  const { data } = options
+  const data = options
   const id = uuid()
   const responseEvent = `${eventName}_res_${id}`
   console.log('send data start')
