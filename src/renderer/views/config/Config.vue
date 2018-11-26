@@ -124,8 +124,12 @@ export default {
     },
     setExportDir () {
       this.$send('setExportDir').then(res => {
-        this.$Message.success('修改导出目录成功！')
-        this.getConfigData()
+        if (res.err === 0) {
+          this.$Message.success('修改导出目录成功！')
+          this.getConfigData()
+        } else {
+          this.$Message.error(res.data.msg)
+        }
       }).catch(err => {
         console.log(err)
         this.$Message.error('修改失败，请联系管理员或到git提交Issues')
@@ -133,8 +137,12 @@ export default {
     },
     setBakDir () {
       this.$send('setBakDir').then(res => {
-        this.$Message.success('修改备份目录成功！')
-        this.getConfigData()
+        if (res.err === 0) {
+          this.$Message.success('修改备份目录成功！')
+          this.getConfigData()
+        } else {
+          this.$Message.error(res.data.msg)
+        }
       }).catch(err => {
         console.log(err)
         this.$Message.error('修改失败，请联系管理员或到git提交Issues')
@@ -146,7 +154,12 @@ export default {
         content: '<p>请谨慎操作！</p><p>还原会覆盖原数据！</p>',
         onOk: () => {
           this.$send('restoreDb').then(res => {
-            this.$Message.success('还原数据库成功！')
+            if (res.err === 0) {
+              this.$Message.success('还原数据库成功！')
+              this.getConfigData()
+            } else {
+              this.$Message.error(res.data.msg)
+            }
           }).catch(err => {
             console.log(err)
             this.$Message.error('还原失败，请联系管理员或到git提交Issues')

@@ -131,7 +131,9 @@ export const setExportDir = () => {
           reject(err)
         }
       } else {
-        reject(new Error('取消修改'))
+        resolve(new ResolveMessage({
+          msg: '取消修改'
+        }, 1050))
       }
     })
   })
@@ -157,7 +159,9 @@ export const setBakDir = () => {
           reject(err)
         }
       } else {
-        reject(new Error('取消修改'))
+        resolve(new ResolveMessage({
+          msg: '取消修改'
+        }, 1050))
       }
     })
   })
@@ -235,7 +239,9 @@ export const restoreDb = () => {
           reject(err)
         }
       } else {
-        reject(new Error('取消还原'))
+        resolve(new ResolveMessage({
+          msg: '取消还原'
+        }, 1050))
       }
     })
   })
@@ -384,8 +390,7 @@ export const handleExport = (payload) => {
       defaultPath: exportDir + '/' + payload.fileName,
       message: '导出Excel',
       filters: [
-        {name: 'Excel', extensions: ['xlsx', 'xls']},
-        {name: 'All Files', extensions: ['*']}
+        {name: 'Excel', extensions: ['xlsx']}
       ]
     }, async (fileName) => {
       if (fileName) {
@@ -398,7 +403,9 @@ export const handleExport = (payload) => {
         //   reject(err)
         // })
       } else {
-        reject(new Error('取消导出'))
+        resolve(new ResolveMessage({
+          msg: '取消导出'
+        }, 1050))
       }
     })
   })

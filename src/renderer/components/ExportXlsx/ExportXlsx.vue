@@ -44,6 +44,15 @@ export default {
         headerMap: this.setHeaderMap,
         header: header,
         fileName: fileName
+      }).then(res => {
+        if (res.err === 0) {
+          this.$Message.success('导出成功')
+        } else {
+          this.$Message.error(res.data.msg)
+        }
+      }).catch(err => {
+        console.log(err)
+        this.$Message.error('导出失败，请联系开发人员或者到git上提交 Issues！')
       })
     }
   },

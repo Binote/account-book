@@ -43,6 +43,9 @@ function createWindow () {
       mainWindow = null
     }
   })
+  mainWindow.on('closed', () => {
+    mainWindow = null
+  })
   mainWindow.once('ready-to-show', function () {
     mainWindow.show()
   })
