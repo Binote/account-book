@@ -39,5 +39,5 @@ export const handalXlsx = (_headers, _data, fileName) => {
     }
   }
   // 导出 Excel
-  return XLSX.writeFile(workbook, `${fileName || 'download'}.xlsx`)
+  return XLSX.writeFile(workbook, `${fileName || 'download.xlsx'}`)
 }

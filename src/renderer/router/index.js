@@ -28,6 +28,14 @@ export default new Router({
       }
     },
     {
+      path: '/config',
+      name: 'config',
+      components: {
+        layout: Layout,
+        content: () => import('@/views/config/Config')
+      }
+    },
+    {
       path: '*',
       name: '404',
       components: {

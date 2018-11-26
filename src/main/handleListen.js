@@ -1,8 +1,12 @@
 
+import localStorage from '../utils/localStorage'
+import {xlsxDown as handleXlsxWork} from '../utils/handleXlsxWork'
 const HandleDB = require('./db').default
 // const { join } = require('path')
 const {uuid} = require('../utils/uuid')
 // const _ = require('lodash')
+const md5 = require('md5')
+const {dialog} = require('electron')
 const {mkSelectSql, mkInsertSql, mkUpdateSql} = require('./mkSql')
 
 let db = new HandleDB({
@@ -67,6 +71,54 @@ class ResolveMessage {
     this.error = error
   }
 }
+/**
+ * 登录
+ * @param {*} res
+ */
+export const login = (res) => {
+  if (md5(res.userName) === localStorage.getItem(md5('userName')) && md5(res.password) === localStorage.getItem(md5('password'))) {
+    return Promise.resolve(new ResolveMessage({message: '登录成功！'}))
+  } else {
+    return Promise.reject(new Error('用户名或密码错误'))
+  }
+}
+
+/**
+ * 修改账户密码
+ * @param {*} res
+ */
+export const loginConfig = (payload) => {
+  try {
+    localStorage.setItem(md5('userName'), md5(payload.userName))
+    localStorage.setItem(md5('password'), md5(payload.password))
+    return Promise.resolve(new ResolveMessage({message: '账户密码修改成功！'}))
+  } catch (err) {
+    return Promise.reject(err)
+  }
+}
+/**
+ * 获取系统设置信息
+ * @param {*} payload
+ */
+export const getConfigData = payload => {
+  try {
+    let exportDir = localStorage.getItem(md5('exportDir'))
+    let bakDir = localStorage.getItem(md5('bakDir'))
+    return Promise.resolve(new ResolveMessage({
+      exportDir: exportDir,
+      bakDir: bakDir
+    }))
+  } catch (err) {
+    return Promise.reject(err)
+  }
+}
+
+export const setExportDir = payload => {
+  return new Promise((resolve, reject) => {
+
+  })
+}
+
 /**
  *  获取加油记账table数据
  * @param {*} payload
@@ -194,4 +246,29 @@ export const handleDriver = async (payload) => {
       }
     }
   }
+}
+export const handleExport = (payload) => {
+  return new Promise((resolve, reject) => {
+    dialog.showSaveDialog({
+      title: '导出Excel',
+      defaultPath: payload.fileName,
+      message: '导出Excel',
+      filters: [
+        {name: 'Excel', extensions: ['xlsx', 'xls']},
+        {name: 'All Files', extensions: ['*']}
+      ]
+    }, async (fileName) => {
+      if (fileName) {
+        await handleXlsxWork(payload.responseList, payload.headerMap, payload.header, fileName)
+        resolve(new ResolveMessage({msg: 'success'}))
+        // fs.writeFileData(path.join(fileName), xlsx).then(res => {
+        //   resolve(new ResolveMessage(res))
+        // }).catch(err => {
+        //   reject(err)
+        // })
+      } else {
+        reject(new Error('取消导出'))
+      }
+    })
+  })
 }

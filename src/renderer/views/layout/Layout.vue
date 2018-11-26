@@ -50,6 +50,10 @@
                         <Icon type="md-people" />
                         <span>司机管理</span>
                     </MenuItem>
+                    <MenuItem name="/config">
+                        <Icon type="ios-settings" />
+                        <span>系统设置</span>
+                    </MenuItem>
                 </Menu>
                 <div slot="trigger"></div>
             </Sider>
