@@ -35,7 +35,7 @@ let dataFn = {
  */
   readFileData: (filename) => {
     let promise = new Promise((resolve, reject) => {
-      fs.readFile(filename, 'utf-8', (err, data) => {
+      fs.readFile(filename, (err, data) => {
         if (err) {
           console.log('++++++++++读取失败++++++++++')
           console.log(err)
@@ -54,7 +54,7 @@ let dataFn = {
  * @param  {String} file [文件名]
  * @return {Object}      [Promise对象]
  */
-  copyFileData: (filename, targetFilename) => {
+  copyFileData (filename, targetFilename) {
     let that = this
     return new Promise((resolve, reject) => {
       that.readFileData(filename).then((res) => {

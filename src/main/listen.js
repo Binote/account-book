@@ -7,6 +7,9 @@ const handleListen = require('./handleListen')
 listen('login', handleListen.login)
 listen('loginConfig', handleListen.loginConfig)
 listen('getConfigData', handleListen.getConfigData)
+listen('setExportDir', handleListen.setExportDir)
+listen('setBakDir', handleListen.setBakDir)
+listen('restoreDb', handleListen.restoreDb)
 
 listen('getAccList', handleListen.getAccList)
 listen('handleAcc', handleListen.handleAcc)
@@ -14,3 +17,4 @@ listen('getDriverList', handleListen.getDriverList)
 listen('handleDriver', handleListen.handleDriver)
 
 listen('handleXlsxWork', handleListen.handleExport)
+export const bakDb = handleListen.bakDb

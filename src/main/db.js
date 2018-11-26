@@ -24,6 +24,17 @@ class HandleDB {
     // this.tableName = options && options.tableName || `adsTable` // 表名
     this.db = null // 打开的数据库对象
   }
+
+  // 关闭数据库连接
+  colse () {
+    let _self = this
+    return new Promise((resolve, reject) => {
+      _self.db.close(function (err) {
+        if (err) reject(new Error(err))
+        resolve('数据库关闭成功')
+      })
+    })
+  }
   // 连接数据库(不存在就创建,存在则打开)
   async connectDataBase () {
     await dirExists(join(STORE_PATH, `data`))

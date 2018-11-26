@@ -21,6 +21,12 @@
           <Input v-model="selectPayload.driver_name" placeholder="请输入司机名字" @on-enter="selectBtn"></Input>
         </SelectCol>
         <SelectCol>
+          <Select v-model="selectPayload.status" placeholder="请选择状态" clearable >
+            <Option value='1'>启用</Option>
+            <Option value='0'>禁用</Option>
+          </Select>
+        </SelectCol>
+        <SelectCol>
           <Button @click="clearSelectParams">清空</Button>
           <Button type="primary" @click.native="selectBtn">查找</Button>
         </SelectCol>

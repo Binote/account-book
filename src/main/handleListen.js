@@ -2,13 +2,13 @@
 import localStorage from '../utils/localStorage'
 import {xlsxDown as handleXlsxWork} from '../utils/handleXlsxWork'
 const HandleDB = require('./db').default
-// const { join } = require('path')
+const path = require('path')
 const {uuid} = require('../utils/uuid')
-// const _ = require('lodash')
+const fs = require('./dataFn').default
+const _ = require('lodash')
 const md5 = require('md5')
 const {dialog} = require('electron')
 const {mkSelectSql, mkInsertSql, mkUpdateSql} = require('./mkSql')
-
 let db = new HandleDB({
   databaseFile: `data/accountbase.db`
 })
@@ -98,9 +98,8 @@ export const loginConfig = (payload) => {
 }
 /**
  * 获取系统设置信息
- * @param {*} payload
  */
-export const getConfigData = payload => {
+export const getConfigData = () => {
   try {
     let exportDir = localStorage.getItem(md5('exportDir'))
     let bakDir = localStorage.getItem(md5('bakDir'))
@@ -112,10 +111,133 @@ export const getConfigData = payload => {
     return Promise.reject(err)
   }
 }
-
-export const setExportDir = payload => {
+/**
+ * 修改导出目录
+ */
+export const setExportDir = () => {
   return new Promise((resolve, reject) => {
+    dialog.showOpenDialog({
+      title: '选择导出目录',
+      defaultPath: localStorage.getItem(md5('exportDir')),
+      properties: ['openDirectory']
+    }, (files) => {
+      if (files) {
+        try {
+          localStorage.setItem(md5('exportDir'), files[0])
+          resolve(new ResolveMessage({
+            msg: 'success'
+          }))
+        } catch (err) {
+          reject(err)
+        }
+      } else {
+        reject(new Error('取消修改'))
+      }
+    })
+  })
+}
 
+/**
+ * 修改备份目录
+ */
+export const setBakDir = () => {
+  return new Promise((resolve, reject) => {
+    dialog.showOpenDialog({
+      title: '选择备份目录',
+      defaultPath: localStorage.getItem(md5('bakDir')),
+      properties: ['openDirectory']
+    }, (files) => {
+      if (files) {
+        try {
+          localStorage.setItem(md5('bakDir'), files[0])
+          resolve(new ResolveMessage({
+            msg: 'success'
+          }))
+        } catch (err) {
+          reject(err)
+        }
+      } else {
+        reject(new Error('取消修改'))
+      }
+    })
+  })
+}
+/**
+ * 备份数据库
+ */
+export const bakDb = () => {
+  return new Promise((resolve, reject) => {
+    let bakDir = localStorage.getItem(md5('bakDir'))
+    let date = new Date()
+    let seperator1 = '-'
+    let year = date.getFullYear()
+    let month = date.getMonth() + 1
+    let strDate = date.getDate()
+    let milliseconds = date.getMilliseconds()
+    if (month >= 1 && month <= 9) {
+      month = '0' + month
+    }
+    if (strDate >= 0 && strDate <= 9) {
+      strDate = '0' + strDate
+    }
+    let defaultFileName = '' + year + seperator1 + month + seperator1 + strDate + seperator1 + milliseconds + '.bak'
+    const fileName = defaultFileName
+    if (bakDir) {
+      db.colse().then(res => {
+        console.log(res)
+        fs.copyFileData(db.databaseFile, bakDir + '/' + fileName).then(res => {
+          console.log(res)
+          db.connectDataBase()
+          resolve(res)
+        }).catch(err => {
+          reject(err)
+        })
+      }).catch(err => {
+        reject(err)
+      })
+    } else {
+      setBakDir().then((res) => {
+        console.log(res)
+        bakDb()
+      }).catch(err => {
+        console.log(err)
+        reject(err)
+      })
+    }
+  })
+}
+
+/**
+ * 还原数据库
+ */
+export const restoreDb = () => {
+  return new Promise((resolve, reject) => {
+    dialog.showOpenDialog({
+      title: '选择备份文件',
+      properties: ['openFile'],
+      filters: [
+        {name: 'DataBase', extensions: ['db', 'bak']}
+      ]
+    }, (files) => {
+      if (files) {
+        try {
+          db.colse().then(() => {
+            fs.copyFileData(files[0], db.databaseFile).then(res => {
+              db.connectDataBase()
+              resolve(res)
+            }).catch(err => {
+              reject(err)
+            })
+          }).catch(err => {
+            reject(err)
+          })
+        } catch (err) {
+          reject(err)
+        }
+      } else {
+        reject(new Error('取消还原'))
+      }
+    })
   })
 }
 
@@ -125,8 +247,9 @@ export const setExportDir = payload => {
  */
 export const getAccList = async (payload) => {
   let sql = 'select * from diesel_acc_book_table'
-  let sqlObj = mkSelectSql(payload, sql)
-  sql = sqlObj.sql
+  let params = _.pick(payload, ['plate_num', 'car_team', 'driver_name', 'startTime', 'endTime'])
+  let sqlObj = mkSelectSql(params, sql)
+  sql = sqlObj.sql + ' ORDER BY date DESC'
   console.log(sqlObj)
   let res
   try {
@@ -146,24 +269,28 @@ export const getAccList = async (payload) => {
  * @param {*} payload
  */
 export const handleAcc = async (payload) => {
-  console.log(111)
   let sql = ''
+  let params = _.pick(payload, ['diesel_acc_id', 'plate_num', 'car_team', 'driver_name', 'diesel_unit_price', 'diesel_unit', 'diesel_tot_price', 'date', 'remark'])
   if (payload.diesel_acc_id) {
     sql += 'update diesel_acc_book_table set '
-    let sqlObj = mkUpdateSql(payload, sql)
+    let sqlObj = mkUpdateSql(params, sql)
     sql = sqlObj.sql + ' where diesel_acc_id = ?'
     console.log(sql)
     sqlObj.paramsArr.push(payload.diesel_acc_id)
     let res
     try {
       res = await db.sql(sql, sqlObj.paramsArr)
-      return Promise.resolve(new ResolveMessage({msg: res}))
+      let dirMsg = await handleDriver(payload)
+      return Promise.resolve(new ResolveMessage({
+        msg: res,
+        dirMsg: dirMsg.data.msg
+      }))
     } catch (error) {
       return Promise.reject(error)
     }
   } else {
     sql += 'insert into diesel_acc_book_table ('
-    let sqlObj = mkInsertSql(payload, sql)
+    let sqlObj = mkInsertSql(params, sql)
     sql = sqlObj.sql + ',diesel_acc_id)' + sqlObj.vals + ',?)'
     console.log(sql)
     sqlObj.paramsArr.push(uuid())
@@ -189,9 +316,10 @@ export const handleAcc = async (payload) => {
  * @param {*} outPayload
  */
 export const getDriverList = async (payload, outPayload) => {
+  let params = _.pick(payload, ['plate_num', 'car_team', 'driver_name', 'status'])
   let sql = 'select * from driver_table '
-  let sqlObj = mkSelectSql(payload, sql, outPayload)
-  sql = sqlObj.sql
+  let sqlObj = mkSelectSql(params, sql, outPayload)
+  sql = sqlObj.sql + ' ORDER BY status DESC'
   console.log(sql)
   let res
   try {
@@ -207,13 +335,14 @@ export const getDriverList = async (payload, outPayload) => {
  */
 export const handleDriver = async (payload) => {
   let sql = ''
+  let params = _.pick(payload, ['driver_id', 'plate_num', 'car_team', 'driver_name', 'status', 'remark'])
   if (payload.driver_id) {
     let driRes = await getDriverList({plate_num: payload.plate_num}, {driver_id: payload.driver_id})
     if (driRes.data.list.length > 0) {
       return Promise.resolve(new ResolveMessage({msg: 'repeat'}, 1005))
     } else {
       sql += 'update driver_table set '
-      let sqlObj = mkUpdateSql(payload, sql)
+      let sqlObj = mkUpdateSql(params, sql)
       sql = sqlObj.sql + ' where driver_id = ?'
       console.log(sql)
       sqlObj.paramsArr.push(payload.driver_id)
@@ -233,7 +362,7 @@ export const handleDriver = async (payload) => {
       return Promise.resolve(new ResolveMessage({msg: 'repeat'}, 1005))
     } else {
       sql += 'insert into driver_table ('
-      let sqlObj = mkInsertSql(payload, sql)
+      let sqlObj = mkInsertSql(params, sql)
       sql = sqlObj.sql + ',driver_id)' + sqlObj.vals + ',?)'
       console.log(sql)
       sqlObj.paramsArr.push(uuid())
@@ -249,9 +378,10 @@ export const handleDriver = async (payload) => {
 }
 export const handleExport = (payload) => {
   return new Promise((resolve, reject) => {
+    let exportDir = localStorage.getItem(md5('exportDir'))
     dialog.showSaveDialog({
       title: '导出Excel',
-      defaultPath: payload.fileName,
+      defaultPath: exportDir + '/' + payload.fileName,
       message: '导出Excel',
       filters: [
         {name: 'Excel', extensions: ['xlsx', 'xls']},
@@ -260,6 +390,7 @@ export const handleExport = (payload) => {
     }, async (fileName) => {
       if (fileName) {
         await handleXlsxWork(payload.responseList, payload.headerMap, payload.header, fileName)
+        localStorage.setItem(md5('exportDir'), path.parse(fileName).dir)
         resolve(new ResolveMessage({msg: 'success'}))
         // fs.writeFileData(path.join(fileName), xlsx).then(res => {
         //   resolve(new ResolveMessage(res))

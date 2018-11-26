@@ -299,7 +299,8 @@ export default {
               this.$Message.success('保存成功！')
               this.postdata.driver_name = ''
               this.postdata.plate_num = ''
-              this.driver_id = ''
+              this.postdata.diesel_unit = null
+              this.postdata.diesel_tot_price = null
               this.getAccList()
             } else {
               this.$Message.error('保存失败，请联系开发人员或者到git上提交 Issues！')
