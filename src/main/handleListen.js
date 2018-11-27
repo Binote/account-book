@@ -282,6 +282,7 @@ export const getAccList = async (payload) => {
 export const handleAcc = async (payload) => {
   let sql = ''
   let params = _.pick(payload, ['diesel_acc_id', 'plate_num', 'car_team', 'driver_name', 'diesel_unit_price', 'diesel_unit', 'diesel_tot_price', 'date', 'remark'])
+  let params2 = _.assign({}, _.pick(payload, ['driver_id', 'plate_num', 'car_team', 'driver_name', 'status', 'remark']), {status: '1'})
   if (payload.diesel_acc_id) {
     sql += 'update diesel_acc_book_table set '
     let sqlObj = mkUpdateSql(params, sql)
@@ -291,7 +292,9 @@ export const handleAcc = async (payload) => {
     let res
     try {
       res = await db.sql(sql, sqlObj.paramsArr)
-      let dirMsg = await handleDriver(payload)
+      let dirMsg = await handleDriver(params2)
+      console.log('++++++++++++++++++++++++++++++')
+      console.log(dirMsg)
       return Promise.resolve(new ResolveMessage({
         msg: res,
         dirMsg: dirMsg.data.msg
@@ -308,12 +311,13 @@ export const handleAcc = async (payload) => {
     let res
     try {
       res = await db.sql(sql, sqlObj.paramsArr)
+      let dirMsg = await handleDriver(params2)
       // let param = _.pick(payload, ['driver_id', 'driver_name', 'plate_num', 'car_team', 'remark', 'status'])
       // param.status = param.status || '1'
       // let driversRes = await handleDriver(param)
       return Promise.resolve(new ResolveMessage({
-        msg: res
-        // driversRes: driversRes
+        msg: res,
+        dirMsg: dirMsg.data.msg
       }))
     } catch (error) {
       return Promise.reject(error)

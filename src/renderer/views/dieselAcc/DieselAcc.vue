@@ -268,6 +268,7 @@ export default {
       this.$send('getAccList', payload).then((res) => {
         if (res.error === 0) {
           this.params = res.data
+          this.getDriverList()
         } else {
           this.$Message.error('获取加油记账数据失败，请联系开发人员或者到git上提交 Issues！')
         }
@@ -340,6 +341,7 @@ export default {
   },
   activated () {
     this.getAccList(this.pagePayload)
+
     this.getDriverList()
   },
   created () {
