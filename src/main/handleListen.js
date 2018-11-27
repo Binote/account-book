@@ -221,6 +221,7 @@ export const restoreDb = () => {
     dialog.showOpenDialog({
       title: '选择备份文件',
       properties: ['openFile'],
+      defaultPath: localStorage.getItem(md5('bakDir')),
       filters: [
         {name: 'DataBase', extensions: ['db', 'bak']}
       ]
