@@ -102,6 +102,8 @@ export default {
           this.$send(name, this[name].postdata).then(res => {
             if (res.error === 0) {
               this.$Message.success(res.data.message)
+              this[name].postdata = {}
+              this[name].modal = false
             } else {
               this.$Message.error('修改失败，请联系管理员或到git提交Issues')
             }
