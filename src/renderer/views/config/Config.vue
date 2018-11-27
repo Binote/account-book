@@ -154,7 +154,7 @@ export default {
         content: '<p>请谨慎操作！</p><p>还原会覆盖原数据！</p>',
         onOk: () => {
           this.$send('restoreDb').then(res => {
-            if (res.err === 0) {
+            if (res.error === 0) {
               this.$Message.success('还原数据库成功！')
               this.getConfigData()
             } else {
