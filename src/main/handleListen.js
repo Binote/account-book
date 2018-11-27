@@ -7,7 +7,7 @@ const {uuid} = require('../utils/uuid')
 const fs = require('./dataFn').default
 const _ = require('lodash')
 const md5 = require('md5')
-const {dialog} = require('electron')
+const {dialog, shell} = require('electron')
 const {mkSelectSql, mkInsertSql, mkUpdateSql} = require('./mkSql')
 let db = new HandleDB({
   databaseFile: `data/accountbase.db`
@@ -400,6 +400,7 @@ export const handleExport = (payload) => {
       if (fileName) {
         await handleXlsxWork(payload.responseList, payload.headerMap, payload.header, fileName)
         localStorage.setItem(md5('exportDir'), path.parse(fileName).dir)
+        shell.openItem(fileName)
         resolve(new ResolveMessage({msg: 'success'}))
         // fs.writeFileData(path.join(fileName), xlsx).then(res => {
         //   resolve(new ResolveMessage(res))
