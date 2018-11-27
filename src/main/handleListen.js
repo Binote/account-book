@@ -192,7 +192,9 @@ export const bakDb = () => {
         fs.copyFileData(db.databaseFile, bakDir + '/' + fileName).then(res => {
           console.log(res)
           db.connectDataBase()
-          resolve(res)
+          resolve(new ResolveMessage({
+            msg: res
+          }))
         }).catch(err => {
           reject(err)
         })
@@ -228,7 +230,9 @@ export const restoreDb = () => {
           db.colse().then(() => {
             fs.copyFileData(files[0], db.databaseFile).then(res => {
               db.connectDataBase()
-              resolve(res)
+              resolve(new ResolveMessage({
+                msg: res
+              }))
             }).catch(err => {
               reject(err)
             })

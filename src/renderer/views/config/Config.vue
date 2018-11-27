@@ -124,7 +124,7 @@ export default {
     },
     setExportDir () {
       this.$send('setExportDir').then(res => {
-        if (res.err === 0) {
+        if (res.error === 0) {
           this.$Message.success('修改导出目录成功！')
           this.getConfigData()
         } else {
@@ -137,7 +137,7 @@ export default {
     },
     setBakDir () {
       this.$send('setBakDir').then(res => {
-        if (res.err === 0) {
+        if (res.error === 0) {
           this.$Message.success('修改备份目录成功！')
           this.getConfigData()
         } else {
