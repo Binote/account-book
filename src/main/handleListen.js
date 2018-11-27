@@ -60,9 +60,9 @@ CREATE TABLE if not exists driver_table (
 );`
   return db.createTable(sentence)
 }).then((result) => {
-  console.log(result, 555)
+  console.log(result)
 }).catch((err) => {
-  console.error(err, 444)
+  console.error(err)
 })
 
 class ResolveMessage {

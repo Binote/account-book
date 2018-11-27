@@ -45,7 +45,7 @@ export default {
         header: header,
         fileName: fileName
       }).then(res => {
-        if (res.err === 0) {
+        if (res.error === 0) {
           this.$Message.success('导出成功')
         } else {
           this.$Message.error(res.data.msg)
